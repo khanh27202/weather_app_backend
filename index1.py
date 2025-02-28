@@ -36,10 +36,6 @@ def Hossain_2014(H, p, Ce, Te, T, B, BPRT):
     except (ZeroDivisionError, ValueError, TypeError):
         return None
 
-@app.route('/')
-def hello_world():
-    return 'Hello, World!'
-
 @app.route('/api/weather')
 def get_weather():
     try:
