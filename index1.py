@@ -132,11 +132,6 @@ def predict(data):
     y_pred = ice_model.predict(X.reshape(1, sequence_length, len(features)))
     return float(y_pred[0][0])
 
-
-@app.route('/')
-def hello_world():
-    return 'Hello, World!'
-
 @app.route('/api/weather')
 def get_weather():
     requests 
