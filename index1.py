@@ -155,6 +155,8 @@ def get_weather():
 
 @app.route('/api/weather/hossain')
 def get_hossain():
+    temp = f_to_c(last_tempf)
+    result, green_result, jb_result, slicer_result, blue_result = 0,0,0,0,0
     try:
         # Use the stored temperature data
         sample_data = {
@@ -162,7 +164,7 @@ def get_hossain():
             'snow_density': 300,
             'salt_concentration': 0.23,
             'salt_temp': -21,
-            'pave_temp': f_to_c(last_tempf),
+            'pave_temp': temp,
             'melt_speed': 0.49,
             'BPRT': 2.04
         }
@@ -175,7 +177,30 @@ def get_hossain():
             sample_data['melt_speed'],
             sample_data['BPRT']
         )
-        return jsonify({'Hossain_2014_Result': result if result is not None else "Calculation error"})
+        if result is None:
+            return jsonify({'error': 'Calculation error: result is invalid'})
+
+        if temp < -7:
+            green_result = 0.62*result
+            jb_result = 0.73*result
+            slicer_result = 0.8*result
+        elif -7 <= temp <= -3:
+            green_result = 0.55*result
+            jb_result = 0.6*result
+            blue_result = 0.85*result
+            slicer_result = 0.82*result
+        else:
+            green_result = 0.48*result
+            jb_result = 0.6*result
+            slicer_result = 0.85*result
+
+        return jsonify({
+                        'Normal': round(result, 2),
+                        'Green': round(green_result, 2),
+                        'Jet Blue': round(jb_result, 2),
+                        'Blue': round(blue_result, 2) if blue_result!= 0 else 'N/A',
+                        'Slicer': round(slicer_result, 2)
+                        })
     except requests.exceptions.RequestException as e:
         app.logger.error(f"Error fetching Hossain data: {e}")
         return jsonify({'error': str(e)}), 500
